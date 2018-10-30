@@ -1,0 +1,17 @@
+spring:
+  application:
+    name: user-edge-service
+  redis:
+    host: 114.67.226.204
+    port: 6379
+    password: ol4156tZpxagxn8W
+server:
+  port: 8081
+thrift:
+  server:
+    user:
+      ip: 127.0.0.1
+      port: 9091
+    message:
+      ip: 127.0.0.1
+      port: 9090
