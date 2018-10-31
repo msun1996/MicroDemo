@@ -58,7 +58,7 @@ public abstract class LoginFilter implements Filter {
             // 远程提取
             if (userInfoDTO == null) {
                 RestTemplate restTemplate = new RestTemplate();
-                String url = "http://127.0.0.1:8081/user/auth";
+                String url = "http://127.0.0.1/user/auth";
                 HttpHeaders headers = new HttpHeaders();
                 headers.add("token", token);
                 userInfoDTO = restTemplate.postForObject(url,new HttpEntity<String>(headers), UserInfoDTO.class);
@@ -68,7 +68,7 @@ public abstract class LoginFilter implements Filter {
             }
         }
         if(userInfoDTO == null){
-            response.sendRedirect("http://127.0.0.1:8081/user/login");
+            response.sendRedirect("http://127.0.0.1/user/login");
             return ;
         }
 

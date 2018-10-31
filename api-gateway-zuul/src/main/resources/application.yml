@@ -1,0 +1,14 @@
+spring:
+  application:
+    name: api-gateway-zull
+server:
+  port: 80
+zuul:
+  sensitive-headers:
+  routes:
+    course:
+      path: /course/**
+      url: http://127.0.0.1:8085/course/
+    user:
+      path: /user/**
+      url: http://127.0.0.1:8081/user/
