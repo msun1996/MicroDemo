@@ -5,12 +5,10 @@
     <title>登录界面</title>
 </head>
 <body>
-<form name="form" th:action="@{/login}" action="/login" method="post">
+<form name="form"  method="post">
     <input type="text" name="username" placeholder="用户">
     <input type="password" name="password" placeholder="密码">
     <button type="submit">登录</button>
 </form>
-<p th:if="${param.logout}">注销成功</p>
-<p th:if="${param.error}">账户或密码有误</p>
 </body>
 </html>

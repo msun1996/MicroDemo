@@ -130,7 +130,7 @@ public class UserController {
      */
     @PostMapping("/login")
     @ResponseBody
-    public ResultVO login(@RequestBody @Valid LoginForm loginForm,
+    public ResultVO login(@Valid LoginForm loginForm,
                           BindingResult bindingResult) {
 
         // 1.参数校验
@@ -161,7 +161,7 @@ public class UserController {
 
         // 4.redis缓存用户
         redisTemplate.opsForValue().set(token, userInfoDTO, 3600, TimeUnit.SECONDS);
-        return ResultVOUtil.success();
+        return ResultVOUtil.success(token);
     }
 
     /**

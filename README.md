@@ -237,3 +237,127 @@ public class ThriftServer {
     }
 }
 ```
+# Dubbo
+## Dubbo基础
+### Dubbu核心组件
+- Provider: 暴露服务的提供方，可以通过jar或者容器的方式启动服务
+- Consumer：调用远程服务的服务消费方。
+- Registry： 服务注册中心和发现中心。
+- Monitor： 统计服务和调用次数，调用时间监控中心。
+- Container：服务运行的容器。  
+(https://github.com/apache/incubator-dubbo-spring-boot-project)  
+(http://dubbo.apache.org/zh-cn/docs/user/quick-start.html)
+## Dubbo基础使用
+## Dubbo基础使用
+### Dubbo Api
+**DemoService** 接口使用
+```java
+package com.demo.dubboapi;
+
+public interface DemoService {
+    String sayHello(String name);
+}
+```
+### Dubbo Provider
+1.**pom**依赖
+```
+<dependency>
+    <groupId>com.alibaba.boot</groupId>
+    <artifactId>dubbo-spring-boot-starter</artifactId>
+    <version>0.2.0</version>
+</dependency>
+<dependency>
+    <groupId>com.demo</groupId>
+    <artifactId>dubbo-api</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+</dependency>
+```
+2.**application.properties**
+```
+# Spring boot application
+spring.application.name = dubbo-provider-demo
+server.port = 9090
+management.port = 9091
+
+# Service version
+demo.service.version = 1.0.0
+
+# Base packages to scan Dubbo Components (e.g., @Service, @Reference)
+# have a bug : Using the default configuration 'base-package' will cause the service to start abnormally(0.2.0)
+dubbo.scan.basePackages  = com.demo.dubboprovider.service
+
+# Dubbo Config properties
+## ApplicationConfig Bean
+dubbo.application.id = dubbo-provider-demo
+dubbo.application.name = dubbo-provider-demo
+
+## ProtocolConfig Bean
+dubbo.protocol.id = dubbo
+dubbo.protocol.name = dubbo
+dubbo.protocol.port = 12345
+
+## RegistryConfig Bean
+dubbo.registry.id = my-registry
+dubbo.registry.address = N/A
+```
+3.**DemoServeiceImpl**接口服务实现
+```java
+package com.demo.dubboprovider.service;
+
+import com.alibaba.dubbo.config.annotation.Service;
+import com.demo.dubboapi.DemoService;
+
+/**
+ * author: mSun
+ * date: 2018/10/30
+ */
+@Service(
+        version = "${demo.service.version}",
+        application = "${dubbo.application.id}",
+        protocol = "${dubbo.protocol.id}",
+        registry = "${dubbo.registry.id}"
+)
+public class DemoServiceImpl implements DemoService {
+
+    @Override
+    public String sayHello(String name) {
+        return "Hello, " + name + " (from Spring Boot)";
+    }
+}
+```
+4.启动类同一般SpringBootWeb启动
+### Dubbo Consumer
+1.**pom**引入同上
+2.**application.properties**同上
+3.**DemoConsumer**
+```java
+package com.demo.dubboconsumer.controller;
+
+import com.alibaba.dubbo.config.annotation.Reference;
+import com.demo.dubboapi.DemoService;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+/**
+ * author: mSun
+ * date: 2018/10/30
+ */
+@RestController
+public class DemoConsumer {
+
+    @Reference(
+            version = "${demo.service.version}",
+            application = "${dubbo.application.id}",
+            url = "dubbo://localhost:12345")
+    private DemoService demoService;
+
+    @RequestMapping("/sayHello")
+    public String sayHello(@RequestParam String name) {
+        return demoService.sayHello(name);
+    }
+
+}
+```
+4.启动类同一般SpringBootWeb启动
+

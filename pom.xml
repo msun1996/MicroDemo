@@ -10,6 +10,9 @@
         <module>message-thrift-service-api</module>
         <module>user-thrift-service-api</module>
         <module>user-thrift-service</module>
+        <module>course-dubbo-service-api</module>
+        <module>course-dubbo-service</module>
+        <module>course-edge-service</module>
     </modules>
     <packaging>pom</packaging>
 
