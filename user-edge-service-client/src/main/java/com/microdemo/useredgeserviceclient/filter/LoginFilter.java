@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 /**
+ * 登录拦截
  * author: mSun
  * date: 2018/10/30
  */
@@ -58,7 +59,7 @@ public abstract class LoginFilter implements Filter {
             // 远程提取
             if (userInfoDTO == null) {
                 RestTemplate restTemplate = new RestTemplate();
-                String url = "http://127.0.0.1/user/auth";
+                String url = "http://user-edge-service:8081/user/auth";
                 HttpHeaders headers = new HttpHeaders();
                 headers.add("token", token);
                 userInfoDTO = restTemplate.postForObject(url,new HttpEntity<String>(headers), UserInfoDTO.class);
@@ -68,7 +69,8 @@ public abstract class LoginFilter implements Filter {
             }
         }
         if(userInfoDTO == null){
-            response.sendRedirect("http://127.0.0.1/user/login");
+            // 具体时写最外层域名
+            response.sendRedirect("http://192.168.99.100/user/login");
             return ;
         }
 

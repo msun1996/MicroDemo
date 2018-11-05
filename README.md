@@ -327,9 +327,9 @@ public class DemoServiceImpl implements DemoService {
 ```
 4.启动类同一般SpringBootWeb启动
 ### Dubbo Consumer
-1.**pom**引入同上
-2.**application.properties**同上
-3.**DemoConsumer**
+1.**pom**引入同上  
+2.**application.properties**同上  
+3.**DemoConsumer**  
 ```java
 package com.demo.dubboconsumer.controller;
 
@@ -360,4 +360,99 @@ public class DemoConsumer {
 }
 ```
 4.启动类同一般SpringBootWeb启动
+# 微服务编排
+## 微服务编排基础
+### Docker 基础操作
+```
+# 查询docker相关命令
+docker --help
+# 远程拉取镜像
+docker pull [OPTIONS] NAME[:TAG]
+# 查看本机有哪些镜像
+docker images [OPTIONS] [REPOSITORY[:TAG]]
+# 运行镜像
+docker run [OPTIONS] IMAGE[:TAG] [COMMAND] [ARG]
+# options
+-d 后台运行
+-p 主机port:容器目标port
+# 查看运行docker
+docker ps
+# 在已运行容器进行命令
+docker exec [OPTIONS] CONTAINER COMMAND
+# options
+-i 保证输入有效
+-t 分配伪终端
+```
+### 自建镜像基础过程
+1.创建Dockerfile
+```
+# 基础镜像
+from docker.io/idasound/centos7-jdk8
+# 作者
+MAINTAINER msun msun1996@163.com
+# 添加要执行的jar包
+ADD eureka-0.0.1-SNAPSHOT.jar /eureka.jar
+# 暴露端口
+EXPOSE 8761
+# 执行命令
+ENTRYPOINT ["java","-jar","/eureka.jar"]
+```
+2.制作镜像
+```
+docker build -t eureka:latest .
+```
+3.运行镜像
+```
+docker run -d -p 80:8761 eureka_image_id
+```
+### 镜像运行ip传参的两种方式
+#### jar配置传参，Command方式
+1.配置文件
+```yaml
+spring:
+  application:
+    name: course-dubbo-service
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver
+    username: ${mysql.username}
+    password: ${mysql.password}
+    url: jdbc:mysql://${mysql.address}:3306/micro?characterEncoding=utf-8&useSSL=false
+```
+2.1 jar命令传参
+```
+docker run -it course-dubbo-service:latest --mysql.address=192.168.99.1 --mysql.username=jd_test --mysql.password=Hzy12345678
+```
+2.2 docker-compose.yml配置传参
+```yaml
+version: "3"
 
+services:
+  course-dubbo-service:
+    # 镜像名
+    image: course-dubbo-service:latest
+    # 相当于jar传参
+    command:
+      - "--mysql.address=116.196.81.166"
+      - "--mysql.username=jd_test"
+      - "--mysql.password=Hzy12345678"
+```
+#### Docker命名，Link方式(利用Swarm基础)
+1.配置文件
+```yaml
+spring:
+  application:
+    name: course-dubbo-service
+thrift:
+  server:
+    user:
+      ip: user-thrift-service
+      port: 9091
+```
+2.docker-compose.yml配置传参
+```yaml
+version: "3"
+
+services:
+  user-thrift-service:
+    image: user-thrift-service:latest
+```

@@ -4,7 +4,6 @@ from thrift.transport import TTransport
 from thrift.protocol import TBinaryProtocol
 from thrift.server import TServer
 
-__HOST = "127.0.0.1"
 __PORT = "9090"
 
 
@@ -25,7 +24,7 @@ if __name__ == "__main__":
     handler = MessageServiceHandle()
     processor = MessageService.Processor(handler)
     # 传输端口
-    transport = TSocket.TServerSocket(host=__HOST, port=__PORT)
+    transport = TSocket.TServerSocket(host=None, port=__PORT)
     # 传输方式(帧传输)
     tfactory = TTransport.TFramedTransportFactory()
     # 传输协议

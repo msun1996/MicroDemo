@@ -1,0 +1,43 @@
+version: "3"
+
+services:
+  message-service:
+    image: message-service:latest
+
+  user-thrift-service:
+    image: user-thrift-service:latest
+    command:
+      - "--mysql.address=116.196.81.166"
+      - "--mysql.username=jd_test"
+      - "--mysql.password=Hzy12345678"
+
+  user-edge-service:
+    image: user-edge-service:latest
+    links:
+      - user-thrift-service
+      - message-service
+    command:
+      - "--redis.address=114.67.226.204"
+
+  course-dubbo-service:
+    image: course-dubbo-service:latest
+    links:
+      - user-thrift-service
+    command:
+      - "--mysql.address=116.196.81.166"
+      - "--mysql.username=jd_test"
+      - "--mysql.password=Hzy12345678"
+
+  course-edge-service:
+    image: course-edge-service:latest
+    links:
+      - user-edge-service
+      - course-dubbo-service
+
+  api-gateway-zuul:
+    image: api-gateway-zuul:latest
+    links:
+      - user-edge-service
+      - course-edge-service
+    ports:
+      - 80:80

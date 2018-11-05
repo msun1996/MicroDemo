@@ -20,7 +20,7 @@ public class CourseController {
     @Reference(
             version = "${course.service.version}",
             application = "${dubbo.application.id}",
-            url = "dubbo://localhost:12345"
+            url = "dubbo://course-dubbo-service:12345"
     )
     private ICourseService courseService;
 
