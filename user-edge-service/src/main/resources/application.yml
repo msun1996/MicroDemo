@@ -2,7 +2,7 @@ spring:
   application:
     name: user-edge-service
   redis:
-    host: ${redis.address}
+    host: 114.67.226.204
     port: 6379
     password: ol4156tZpxagxn8W
 server:
@@ -10,7 +10,7 @@ server:
 thrift:
   server:
     user:
-      ip: user-thrift-service
+      ip: user-service
       port: 9091
     message:
       ip: message-service

@@ -3,8 +3,8 @@ spring:
     name: user-thrift-service
   datasource:
     driver-class-name: com.mysql.jdbc.Driver
-    username: ${mysql.username}
-    password: ${mysql.password}
-    url: jdbc:mysql://${mysql.address}:3306/micro?characterEncoding=utf-8&useSSL=false
+    username: jd_test
+    password: Hzy12345678
+    url: jdbc:mysql://116.196.84.11:3306/micro?characterEncoding=utf-8&useSSL=false
 service:
   port: 9091

@@ -1,0 +1,49 @@
+# 版本
+apiVersion: v1
+# 资源类型
+kind: Service
+# 资源属性
+metadata:
+  # 资源名(namespace唯一)
+  name: api-gateway
+  # 标签
+  labels:
+    app: api-gateway
+# 资源内容指定
+spec:
+  ports:
+    # service内部端口
+  - port: 80
+    protocol: TCP
+    # 容器端口
+    targetPort: 80
+    # node对外暴露端口
+    nodePort: 80
+  # 选择pod(对应下面template标签)
+  selector:
+    app: api-gateway
+  type: NodePort
+---
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: api-gateway-deployment
+spec:
+  # 启动个数
+  replicas: 1
+  # 模版
+  template:
+    metadata:
+      labels:
+        app: api-gateway
+    spec:
+      # 容器
+      containers:
+      - name: api-gateway
+        # 使用镜像
+        image: msun96-cn-north-1.jcr.service.jdcloud.com/micro-service/api-gateway-zuul
+        ports:
+        - containerPort: 80
+      # 密匙
+      imagePullSecrets:
+      - name: secret

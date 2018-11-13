@@ -1,7 +1,9 @@
+
 package com.microDemo.course.edge.filter;
 
 import com.micro.thrift.user.dto.UserInfoDTO;
 import com.microdemo.useredgeserviceclient.filter.LoginFilter;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;

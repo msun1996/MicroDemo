@@ -1,0 +1,38 @@
+# 版本
+apiVersion: v1
+# 资源类型
+kind: Service
+metadata:
+  name: message-service
+  # 标签
+  labels:
+    app: message-service
+spec:
+  ports:
+    # 服务端口
+  - port: 9090
+    protocol: TCP
+    targetPort: 9090
+  selector:
+    app: message-service
+  type: ClusterIP
+---
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: message-service-deployment
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: message-service
+    spec:
+      containers:
+      - name: message-service
+        image: msun96-cn-north-1.jcr.service.jdcloud.com/micro-service/message-service
+        ports:
+        - containerPort: 9090
+      # 密匙
+      imagePullSecrets:
+      - name: secret

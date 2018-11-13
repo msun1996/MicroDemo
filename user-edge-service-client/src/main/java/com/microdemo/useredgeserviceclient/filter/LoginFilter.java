@@ -22,11 +22,19 @@ import java.util.concurrent.TimeUnit;
  */
 public abstract class LoginFilter implements Filter {
 
+    // 真实公网ip
+    private static final String publicIP = "www.public-ip.com";
+
+    // 用户服务内部地址
+    private static final String userEdgeServiceAddr = "user-server:8081";
+
     // 使用guava定义缓存
     private static Cache<String, UserInfoDTO> cache = CacheBuilder.newBuilder()
             .maximumSize(10000)
             .expireAfterWrite(3, TimeUnit.MINUTES)
             .build();
+
+    protected abstract void login(HttpServletRequest request, HttpServletResponse response, UserInfoDTO userInfoDTO);
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
@@ -59,7 +67,7 @@ public abstract class LoginFilter implements Filter {
             // 远程提取
             if (userInfoDTO == null) {
                 RestTemplate restTemplate = new RestTemplate();
-                String url = "http://user-edge-service:8081/user/auth";
+                String url = "http://"+ userEdgeServiceAddr +"/user/auth";
                 HttpHeaders headers = new HttpHeaders();
                 headers.add("token", token);
                 userInfoDTO = restTemplate.postForObject(url,new HttpEntity<String>(headers), UserInfoDTO.class);
@@ -70,7 +78,7 @@ public abstract class LoginFilter implements Filter {
         }
         if(userInfoDTO == null){
             // 具体时写最外层域名
-            response.sendRedirect("http://192.168.99.100/user/login");
+            response.sendRedirect("http://" + publicIP + "/user/login");
             return ;
         }
 
@@ -78,8 +86,6 @@ public abstract class LoginFilter implements Filter {
 
         filterChain.doFilter(request,response);
     }
-
-    protected abstract void login(HttpServletRequest request, HttpServletResponse response, UserInfoDTO userInfoDTO);
 
     @Override
     public void destroy() {
