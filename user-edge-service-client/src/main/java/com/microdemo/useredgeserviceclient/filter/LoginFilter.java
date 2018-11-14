@@ -23,10 +23,10 @@ import java.util.concurrent.TimeUnit;
 public abstract class LoginFilter implements Filter {
 
     // 真实公网ip
-    private static final String publicIP = "www.public-ip.com";
+    private static final String publicIP = "116.196.86.59";
 
     // 用户服务内部地址
-    private static final String userEdgeServiceAddr = "user-server:8081";
+    private static final String userEdgeServiceAddr = "user-service:8081";
 
     // 使用guava定义缓存
     private static Cache<String, UserInfoDTO> cache = CacheBuilder.newBuilder()

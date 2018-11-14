@@ -7,9 +7,14 @@ metadata:
 spec:
   ports:
     # service对内端口
-  - port: 8085
+  - name: course-dubbo-service-port
+    port: 12345
     protocol: TCP
     # 容器端口
+    targetPort: 12345
+  - name: course-edge-service-port
+    port: 8085
+    protocol: TCP
     targetPort: 8085
   selector:
     app: course-service
