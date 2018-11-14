@@ -456,3 +456,127 @@ services:
   user-thrift-service:
     image: user-thrift-service:latest
 ```
+
+# CICD
+## CICD 架构图
+![](doc/CICD.png)
+
+## 相关的安装
+### 1.git安装(使用github)
+### 2.jenkins安装
+见Jenkins官网: https://jenkins.io/
+```shell
+# 依赖
+yum install java-1.8.0-openjdk
+yum install maven
+```
+### 3.Harbor安装(使用京东云镜像仓库)
+### 4.K8S安装(见K8S配置安装)
+
+## 相关配置
+### jenkins
+#### 1.系统设置->系统安全设置
+- 取消跨站请求伪造保护
+- 设置匿名用户具有可读权限
+
+#### 2.新建任务
+##### 1.项目model命名，设置流水线项目
+##### 2.任务配置
+- Build Triggers->触发远程构建(设置token)
+- pipeline
+
+```shell
+#!groovy
+pipeline {
+    
+    /* 选择节点 */
+    agent any
+    
+    /* 环境配置 */
+    environment {
+        REPOSITORY="https://github.com/msun1996/MicroDemo.git"
+        MODULE="user-edge-service"
+        SCRIPT="/root/scripts"
+    }
+    
+    /* 阶段 */
+    stages {
+        stage('获取代码') {
+            steps {
+                echo "start fetch code from git: ${REPOSITORY}"
+                // 删除原有项目
+                deleteDir()
+                // 下载git项目
+                git "${REPOSITORY}"
+            }
+        }
+        
+        stage('静态分析') {
+            steps {
+                echo "start code check"
+            }
+        }
+        
+        stage('编译+单元测试') {
+            steps {
+                echo "start complie"
+                sh "mvn -U -pl ${MODULE} -am clean package"
+            }
+        }
+        
+        stage('构建镜像') {
+            steps {
+                echo "start build images"
+                sh "${SCRIPT}/build-images.sh ${MODULE}"
+                
+            }
+        }
+        
+        stage('发布系统') {
+            steps {
+                echo "start deploy"
+                sh "${SCRIPT}/deploy.sh user-service-deployment ${MODULE}"
+            }
+        }
+    }
+}
+```
+
+***build-images.sh***
+```shell
+#!/bin/bash
+
+MODULE=$1
+TIME=`date "+%Y%m%d%H%M"`
+GIT_REVISION=`git log -1 --pretty=format:"%h"`
+IMAGE_NAME=msun96-cn-north-1.jcr.service.jdcloud.com/micro-service/${MODULE}:${TIME}_${GIT_REVISION}
+
+cd ${MODULE}
+
+docker build -t ${IMAGE_NAME} .
+cd -
+
+docker push ${IMAGE_NAME}
+
+echo "${IMAGE_NAME}" > IMAGE_NAME
+```
+
+***deploy.sh***
+```shell
+#!/bin/bash
+
+# 本地k8s更新
+IMAGE=`cat IMAGE_NAME`
+DEPLOYMENT=$1
+MODULE=$2
+
+echo "update images to: ${IMAGE}"
+kubectl set image deployments/${DEPLOYMENT} ${MODULE}=${IMAGE}
+```
+
+### github设置
+**webhook配置**
+```shell
+http://114.67.226.204/job/user-edge-service/build?token=123456
+```
+
