@@ -456,6 +456,8 @@ services:
   user-thrift-service:
     image: user-thrift-service:latest
 ```
+## [K8S部署编排](https://github.com/msun1996/kubernetes-starter)
+> 各模块k8s yaml配置文件位于service-config-k8s
 
 # CICD
 ## CICD 架构图
